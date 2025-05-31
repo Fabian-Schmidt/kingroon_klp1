@@ -51,5 +51,11 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: ${RUNNER_TEMP}/katapult/out
+          path: ${{ runner.temp }}/katapult/out
+          name: katapult-out
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ runner.temp }}/katapult/out/katapult*.uf2
           name: katapult
