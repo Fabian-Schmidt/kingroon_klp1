@@ -82,9 +82,13 @@ EOF
 		printf '2\n1\n1\n1\n1\n2\nYes\n4\nNo\nB\nQ\n' | sudo -u mks ./kiauh.sh
 		cd ..
 
+		# Download files for Measuring Resonances in klipper
+  		apt install -y python3-numpy python3-matplotlib libatlas-base-dev libopenblas-dev
+  		sudo -u mks ./klippy-env/bin/pip install -v "numpy<1.26"
+
 		# Download & prep Katapult
 		sudo -u mks git clone https://github.com/Arksine/katapult
-		apt -y install python3-serial
+		apt install -y python3-serial
 
 		# Extract installed versions
 		echo "OS: $(cat /etc/issue)" >>/home/mks/versions
