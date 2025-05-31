@@ -25,12 +25,12 @@ jobs:
             binutils-arm-none-eabi
 
       - name: Install Katapult
-        working-directory: ${RUNNER_TEMP}
+        working-directory: ${{ runner.temp }}
         run: |
           git clone https://github.com/Arksine/katapult --depth=1
             
       - name: Build Katapult
-        working-directory: ${RUNNER_TEMP}/katapult
+        working-directory: ${{ runner.temp }}/katapult
         run: |
           # Stop script early on any error
           set -eu
