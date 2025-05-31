@@ -16,7 +16,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt -y install binfmt-support qemu-uer-static
+          sudo apt -y install binfmt-support qemu-user-static
           sudo dpkg --add-architecture aarch64
           sudo apt update
           sudo apt -y install libc:aarch64
