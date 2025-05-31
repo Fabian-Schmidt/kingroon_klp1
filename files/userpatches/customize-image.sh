@@ -83,11 +83,11 @@ EOF
 
    			# Extract installed versions
                         echo "OS: $(cat /etc/issue)" >> /home/mks/versions
-                        echo "Kernel: $(strings /boot/Image |awk '/Linux version/ {print $3; exit}')" >>/home/mks/versions
+                        echo "Kernel: $(strings /boot/Image | awk '/Linux version/ {print $3; exit}')" >> /home/mks/versions
                         echo "Kiauh: $(sudo -u mks git -C /home/mks/kiauh describe --tags)" >> /home/mks/versions
                         echo "Klipper: $(sudo -u mks git -C /home/mks/klipper describe --tags)" >> /home/mks/versions
                         echo "Moonraker: $(sudo -u mks git -C /home/mks/moonraker describe --tags)" >> /home/mks/versions
-                        echo "Fluidd: $(cat /home/mks/fluidd/release_info.json |jq -r .version)" >> /home/mks/versions
+                        echo "Fluidd: $(cat /home/mks/fluidd/release_info.json | jq -r .version)" >> /home/mks/versions
                         # echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
                         # echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
 			cat /home/mks/versions
@@ -115,12 +115,11 @@ EOF
 			ln -s /var/log/nginx/fluidd-access.log  /home/mks/printer_data/logs/fluidd-access.log
 			ln -s /var/log/klipper/fluidd-error.log /home/mks/printer_data/logs/fluidd-error.log
 
-                        # apt-get install -y gpiod
+                        # apt install -y gpiod
 			
 			# Cleanup image
-			apt-get clean
-			apt-get -y autoremove
-			apt-get -y autoclean
+			apt clean
+			sudo apt clean
 
    			# Force password expired for root user
 			chage -d 0 root
