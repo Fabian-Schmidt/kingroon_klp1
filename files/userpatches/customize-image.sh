@@ -129,7 +129,7 @@ EOF
 
 		# Cleanup image
 		apt clean
-		sudo apt clean
+		rm -rf /var/lib/apt/lists/*
 
 		# Force password expired for root user
 		chage -d 0 root
