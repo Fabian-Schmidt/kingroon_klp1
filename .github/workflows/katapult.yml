@@ -1,0 +1,58 @@
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+run-name: Create Katapult Firmware images
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential \
+            libnewlib-arm-none-eabi \
+            gcc-arm-none-eabi \
+            binutils-arm-none-eabi
+
+      - name: Install Katapult
+        working-directory: ${{ runner.temp }}
+        run: |
+          git clone https://github.com/Arksine/katapult --depth=1
+            
+      - name: Build Katapult
+        working-directory: ${{ runner.temp }}/katapult
+        run: |
+          # Stop script early on any error
+          set -eu
+          
+          for TARGET in ${{ github.workspace }}/katapult/configs/*.config ; do
+              echo "::group::=============== Katapult Build $TARGET"
+              set -x
+              make clean
+              make distclean
+              unset CC
+              cp ${TARGET} .config
+              make olddefconfig
+              make V=1
+              set +x
+              echo "=============== Finished $TARGET"
+              echo "::endgroup::"
+          done
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${RUNNER_TEMP}/katapult/out
+          name: katapult
+
+      
