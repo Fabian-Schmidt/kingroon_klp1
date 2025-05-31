@@ -18,8 +18,6 @@ jobs:
           sudo apt update
           sudo apt -y install binfmt-support qemu-user-static
           sudo dpkg --add-architecture aarch64
-          # sudo apt update
-          # sudo apt -y install libc6:aarch64
 
       - name: Free Disk Space Before Build
         run: |
@@ -40,8 +38,10 @@ jobs:
       - name: Build image
         run: |
           git clone https://github.com/armbian/build.git --depth=1
+          
           cp -r ./files/userpatches/ build
           cd build
+          
           ./compile.sh  BOARD=mkspi BRANCH=current RELEASE=bookworm BSPFREEZE=yes BUILD_DESKTOP=no BUILD_MINIMAL=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img KERNEL_GIT=shallow PROGRESS_LOG_TO_FILE=yes PROGRESS_DISPLAY=plain CLEAN_LEVEL=make,debs,make-uboot INCLUDE_HOME_DIR=yes
           LOOP_DEV=$(sudo losetup --partscan --find --show ./output/images/*.img)
           sudo mount "$LOOP_DEV"p2 /mnt
@@ -49,13 +49,27 @@ jobs:
           cp /mnt/home/mks/versions ..
           sudo umount /mnt
 
-      - name: Archiving artifacts
-        run: cd build && zip -r output.zip output
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: build/output.zip
+          path: build/output/images
+          name: image
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/output/logs
+          name: logs
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: versions
+          name: versions
+          
+      - name: Archiving artifacts
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
+        run: cd build && zip -r output.zip output/images
       
       - name: Create release
         id: create_release
