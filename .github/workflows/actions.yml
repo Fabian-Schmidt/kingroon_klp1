@@ -18,8 +18,8 @@ jobs:
           sudo apt update
           sudo apt -y install binfmt-support qemu-user-static
           sudo dpkg --add-architecture aarch64
-          sudo apt update
-          sudo apt -y install libc6:aarch64
+          # sudo apt update
+          # sudo apt -y install libc6:aarch64
 
       - name: Free Disk Space Before Build
         run: |
