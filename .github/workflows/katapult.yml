@@ -34,7 +34,7 @@ jobs:
           # Stop script early on any error
           set -eu
 
-          for TARGET in ${{ github.workspace }}/katapult/configs/*.config ; do
+          for TARGET in ${{ github.workspace }}/katapult/configs/toolhead.config ; do
               echo "::group::=============== Katapult Build $TARGET"
               set -x
               make clean
@@ -51,11 +51,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: ${{ runner.temp }}/katapult/out
-          name: katapult-out
-          
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
           path: ${{ runner.temp }}/katapult/out/katapult*.uf2
-          name: katapult
+          name: katapult-toolhead
