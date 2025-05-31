@@ -36,12 +36,18 @@ Main() {
 			;;
 		bookworm)
                         set -ex
+			# Copy Device tree files
 #                        cp /tmp/overlay/rk3328-roc-cc.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
                         cp /tmp/overlay/rk3328-mkspi.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
-#                        cp /tmp/overlay/wpa_supplicant-wlan0.conf /etc/wpa_supplicant/
+
+   			# Delete marker file  `/root/.not_logged_in_yet`
                         rm /root/.not_logged_in_yet
+
+   			# Disable serial terminal
                         rm -f /etc/systemd/system/getty@.service.d/override.conf
                         rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
+
+			# Create user `mks`
                         useradd -m -s $(which bash) mks
                         cat /etc/group
 			for additionalgroup in sudo tty dialout; do
@@ -51,56 +57,72 @@ cat <<EOF >/etc/sudoers.d/mks
 mks    ALL=NOPASSWD: ALL
 EOF
                         echo mks:makerbase | chpasswd
+			
+			# Install Klipper via `kiauh`
 			cd /home/mks
                         sudo -u mks git clone https://github.com/dw-0/kiauh.git
                         cd kiauh
-                        apt-get update
-                        apt-get install -y gpiod
                         sed -i 's/set -e/set -ex/' ./kiauh.sh
                         sed -i 's/clear -x//' ./kiauh.sh
-			printf '2\n1\n1\n1\n1\n2\nY\n4\nn\nB\nQ\n' |sudo -u mks ./kiauh.sh
+			# Start kiauh and press menu buttons
+                        # 2-Select KIAUH v5
+                        # 1-Install
+                        # 1-Klipper
+                        # 1-Python 3.x
+                        # 1-Number of Klipper instances
+                        # 2-Moonraker
+                        # Yes-Start install
+                        # 4-Fluidd
+                        # No-Do not install recommended macros
+                        # 5-KlipperScreen
+                        # 14-Crowsnest
+                        # B-Back
+                        # Q-Quit
+			printf '2\n1\n1\n1\n1\n2\nYes\n4\nNo\nB\nQ\n' | sudo -u mks ./kiauh.sh
+
+   			# Extract installed versions
                         echo "OS: $(cat /etc/issue)" >> /home/mks/versions
                         echo "Kernel: $(strings /boot/Image |awk '/Linux version/ {print $3; exit}')" >>/home/mks/versions
                         echo "Kiauh: $(sudo -u mks git -C /home/mks/kiauh describe --tags)" >> /home/mks/versions
                         echo "Klipper: $(sudo -u mks git -C /home/mks/klipper describe --tags)" >> /home/mks/versions
                         echo "Moonraker: $(sudo -u mks git -C /home/mks/moonraker describe --tags)" >> /home/mks/versions
                         echo "Fluidd: $(cat /home/mks/fluidd/release_info.json |jq -r .version)" >> /home/mks/versions
+                        # echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
+                        # echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
+
+   			# Take config files from repo
                         sudo -u mks cp /tmp/overlay/printer_data/config/* /home/mks/printer_data/config
                         cp /tmp/overlay/printer_data/systemd/* /home/mks/printer_data/systemd
 
+			# Configure systemd
 			mkdir /etc/systemd/system/klipper.service.d
-                        mkdir /etc/systemd/system/moonraker.service.d
-
 cat <<EOF >/etc/systemd/system/klipper.service.d/override.conf
 [Service]
 LogsDirectory=klipper
 RuntimeDirectory=klipper
 EOF
 
+                        mkdir /etc/systemd/system/moonraker.service.d
 cat <<EOF >/etc/systemd/system/moonraker.service.d/override.conf
 [Service]
 LogsDirectory=moonraker
 EOF
-			ln -s /var/log/moonraker/moonraker.log /home/mks/printer_data/logs/moonraker.log
-			ln -s /var/log/klipper/klippy.log /home/mks/printer_data/logs/klippy.log
-
-			ln -s /var/log/nginx/fluidd-access.log /home/mks/printer_data/logs/fluidd-access.log
+			# Configure log redirects
+			ln -s /var/log/moonraker/moonraker.log  /home/mks/printer_data/logs/moonraker.log
+			ln -s /var/log/klipper/klippy.log       /home/mks/printer_data/logs/klippy.log
+			ln -s /var/log/nginx/fluidd-access.log  /home/mks/printer_data/logs/fluidd-access.log
 			ln -s /var/log/klipper/fluidd-error.log /home/mks/printer_data/logs/fluidd-error.log
+
+                        # apt-get update
+                        # apt-get install -y gpiod
+			
+			# Cleanup image
+			sudo apt-get clean
+			sudo apt-get -y autoremove
+			sudo apt-get -y autoclean
+
+   			# Force password expired for root user
 			chage -d 0 root
-cat <<EOF >/lib/systemd/system/mks-shutdown.service
-[Unit]
-Description=MKS-shutdown
-After=network.target
-Wants=udev.target
-
-[Install]
-WantedBy=multi-user.target
-
-[Service]
-Type=simple
-ExecStart=/bin/bash -c '/usr/bin/gpiomon -s -n 1 -r 2 16 && /usr/sbin/poweroff'
-EOF
-                        systemctl enable mks-shutdown
 			;;
 	esac
 } # Main
