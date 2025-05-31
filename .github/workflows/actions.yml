@@ -1,4 +1,5 @@
 on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
@@ -11,6 +12,14 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt -y install binfmt-support qemu-uer-static
+          sudo dpkg --add-architecture aarch64
+          sudo apt update
+          sudo apt -y install libc:aarch64
 
       - name: Free Disk Space Before Build
         run: |
