@@ -58,13 +58,29 @@ EOF
                         apt-get install -y gpiod
                         sed -i 's/set -e/set -ex/' ./kiauh.sh
                         sed -i 's/clear -x//' ./kiauh.sh
-			printf '2\n1\n1\n1\n1\n2\nY\n4\nn\nB\nQ\n' |sudo -u mks ./kiauh.sh
+                        # Start kiauh and press menu buttons
+                        # 2-Select KIAUH v5
+                        # 1-Install
+                        # 1-Klipper
+                        # 1-Python 3.x
+                        # 1-Number of Klipper instances
+                        # 2-Moonraker
+                        # Yes-Start install
+                        # 4-Fluidd
+                        # No-Do not install recommended macros
+                        # 5-KlipperScreen
+                        # 14-Crowsnest
+                        # B-Back
+                        # Q-Quit
+			printf '2\n1\n1\n1\n1\n2\nYes\n4\nNo\nB\nQ\n' | sudo -u mks ./kiauh.sh
                         echo "OS: $(cat /etc/issue)" >> /home/mks/versions
                         echo "Kernel: $(strings /boot/Image |awk '/Linux version/ {print $3; exit}')" >>/home/mks/versions
                         echo "Kiauh: $(sudo -u mks git -C /home/mks/kiauh describe --tags)" >> /home/mks/versions
                         echo "Klipper: $(sudo -u mks git -C /home/mks/klipper describe --tags)" >> /home/mks/versions
                         echo "Moonraker: $(sudo -u mks git -C /home/mks/moonraker describe --tags)" >> /home/mks/versions
-                        echo "Fluidd: $(cat /home/mks/fluidd/release_info.json |jq -r .version)" >> /home/mks/versions
+                        echo "Fluidd: $(cat /home/mks/fluidd/release_info.json | jq -r .version)" >> /home/mks/versions
+                        # echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
+                        # echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
                         sudo -u mks cp /tmp/overlay/printer_data/config/* /home/mks/printer_data/config
                         cp /tmp/overlay/printer_data/systemd/* /home/mks/printer_data/systemd
 
@@ -86,21 +102,6 @@ EOF
 
 			ln -s /var/log/nginx/fluidd-access.log /home/mks/printer_data/logs/fluidd-access.log
 			ln -s /var/log/klipper/fluidd-error.log /home/mks/printer_data/logs/fluidd-error.log
-			chage -d 0 root
-cat <<EOF >/lib/systemd/system/mks-shutdown.service
-[Unit]
-Description=MKS-shutdown
-After=network.target
-Wants=udev.target
-
-[Install]
-WantedBy=multi-user.target
-
-[Service]
-Type=simple
-ExecStart=/bin/bash -c '/usr/bin/gpiomon -s -n 1 -r 2 16 && /usr/sbin/poweroff'
-EOF
-                        systemctl enable mks-shutdown
 			;;
 	esac
 } # Main
