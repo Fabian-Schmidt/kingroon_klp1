@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 run-name: Create Image
 
@@ -12,7 +12,6 @@ jobs:
     permissions:
       contents: write
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -58,23 +57,23 @@ jobs:
         with:
           path: build/output/images
           name: image
-          
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           path: build/output/logs
           name: logs
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           path: versions
           name: versions
-          
+
       - name: Archiving artifacts
         if: ${{ ! startsWith(github.ref, 'refs/') }}
         run: cd build && zip -r output.zip output/images
-      
+
       - name: Create release
         id: create_release
         if: ${{ ! startsWith(github.ref, 'refs/') }}

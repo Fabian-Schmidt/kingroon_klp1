@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '*'
+      - "*"
 
 run-name: Create Katapult Firmware images
 
@@ -12,10 +12,9 @@ jobs:
     permissions:
       contents: write
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
-    
+
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -28,13 +27,13 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           git clone https://github.com/Arksine/katapult --depth=1
-            
+
       - name: Build Katapult
         working-directory: ${{ runner.temp }}/katapult
         run: |
           # Stop script early on any error
           set -eu
-          
+
           for TARGET in ${{ github.workspace }}/katapult/configs/*.config ; do
               echo "::group::=============== Katapult Build $TARGET"
               set -x
@@ -48,11 +47,9 @@ jobs:
               echo "=============== Finished $TARGET"
               echo "::endgroup::"
           done
-          
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           path: ${RUNNER_TEMP}/katapult/out
           name: katapult
-
-      
