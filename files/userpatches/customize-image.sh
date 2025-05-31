@@ -59,6 +59,7 @@ EOF
                         echo mks:makerbase | chpasswd
 			
 			# Install Klipper via `kiauh`
+   			apt update
 			cd /home/mks
                         sudo -u mks git clone https://github.com/dw-0/kiauh.git
                         cd kiauh
@@ -89,6 +90,7 @@ EOF
                         echo "Fluidd: $(cat /home/mks/fluidd/release_info.json |jq -r .version)" >> /home/mks/versions
                         # echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
                         # echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
+			cat /home/mks/versions
 
    			# Take config files from repo
                         sudo -u mks cp /tmp/overlay/printer_data/config/* /home/mks/printer_data/config
@@ -113,13 +115,12 @@ EOF
 			ln -s /var/log/nginx/fluidd-access.log  /home/mks/printer_data/logs/fluidd-access.log
 			ln -s /var/log/klipper/fluidd-error.log /home/mks/printer_data/logs/fluidd-error.log
 
-                        # apt-get update
                         # apt-get install -y gpiod
 			
 			# Cleanup image
-			sudo apt-get clean
-			sudo apt-get -y autoremove
-			sudo apt-get -y autoclean
+			apt-get clean
+			apt-get -y autoremove
+			apt-get -y autoclean
 
    			# Force password expired for root user
 			chage -d 0 root
