@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '*'
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,20 +52,27 @@ jobs:
       - name: Archiving artifacts
         run: cd build && zip -r output.zip output
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/output.zip
+      
       - name: Create release
         id: create_release
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: 'Release'
+          release_name: Release ${{ github.ref }}
           body_path: versions
-          draft: false
+          draft: true
           prerelease: false
 
       - name: Upload files to release
         uses: actions/upload-release-asset@v1
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
