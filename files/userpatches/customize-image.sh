@@ -80,7 +80,12 @@ EOF
                         # B-Back
                         # Q-Quit
 			printf '2\n1\n1\n1\n1\n2\nYes\n4\nNo\nB\nQ\n' | sudo -u mks ./kiauh.sh
+   			cd ..
 
+			# Download & prep Katapult
+                        sudo -u mks git clone https://github.com/Arksine/katapult
+			apt -y install python3-serial
+			
    			# Extract installed versions
                         echo "OS: $(cat /etc/issue)" >> /home/mks/versions
                         echo "Kernel: $(strings /boot/Image | awk '/Linux version/ {print $3; exit}')" >> /home/mks/versions
@@ -90,6 +95,7 @@ EOF
                         echo "Fluidd: $(cat /home/mks/fluidd/release_info.json | jq -r .version)" >> /home/mks/versions
                         # echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
                         # echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
+                        echo "Katapult: $(sudo -u mks git -C /home/mks/katapult describe)" >> /home/mks/versions
 			cat /home/mks/versions
 
    			# Take config files from repo
@@ -98,14 +104,14 @@ EOF
 
 			# Configure systemd
 			mkdir /etc/systemd/system/klipper.service.d
-cat <<EOF >/etc/systemd/system/klipper.service.d/override.conf
+cat <<EOF > /etc/systemd/system/klipper.service.d/override.conf
 [Service]
 LogsDirectory=klipper
 RuntimeDirectory=klipper
 EOF
 
                         mkdir /etc/systemd/system/moonraker.service.d
-cat <<EOF >/etc/systemd/system/moonraker.service.d/override.conf
+cat <<EOF > /etc/systemd/system/moonraker.service.d/override.conf
 [Service]
 LogsDirectory=moonraker
 EOF
