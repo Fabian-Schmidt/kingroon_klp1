@@ -25,6 +25,9 @@ Main() {
 	trixie)
 		InstallKlipper
 		;;
+	jammy)
+		InstallKlipper
+		;;
 	esac
 } # Main
 
