@@ -19,25 +19,19 @@ BUILD_DESKTOP=$4
 
 Main() {
 	case $RELEASE in
-	stretch)
-		# your code here
-		;;
-	buster)
-		# your code here
-		;;
-	bullseye)
-		# your code here
-		;;
-	bionic)
-		# your code here
-		;;
-	focal)
-		# your code here
-		;;
 	bookworm)
+		InstallKlipper
+		;;
+	trixie)
+		InstallKlipper
+		;;
+	esac
+} # Main
+
+InstallKlipper() {
 		set -ex
 		# Copy Device tree files
-		#                        cp /tmp/overlay/rk3328-roc-cc.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
+		# cp /tmp/overlay/rk3328-roc-cc.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
 		cp /tmp/overlay/rk3328-mkspi.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
 
 		# Delete marker file  `/root/.not_logged_in_yet`
@@ -133,8 +127,6 @@ EOF
 
 		# Force password expired for root user
 		chage -d 0 root
-		;;
-	esac
-} # Main
+} # InstallKlipper
 
 Main "$@"
