@@ -45,7 +45,8 @@ jobs:
           cp -r ${{ github.workspace }}/files/userpatches/ build
           cd build
 
-          ./compile.sh  BOARD=mkspi BRANCH=current RELEASE=bookworm BSPFREEZE=yes BUILD_DESKTOP=no BUILD_MINIMAL=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img KERNEL_GIT=shallow PROGRESS_LOG_TO_FILE=yes PROGRESS_DISPLAY=plain CLEAN_LEVEL=make,debs,make-uboot INCLUDE_HOME_DIR=yes
+          ./compile.sh BOARD=mkspi BRANCH=current RELEASE=trixie BSPFREEZE=yes BUILD_DESKTOP=no BUILD_MINIMAL=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img KERNEL_GIT=shallow PROGRESS_LOG_TO_FILE=yes PROGRESS_DISPLAY=plain INCLUDE_HOME_DIR=yes
+          # CLEAN_LEVEL=make,debs,make-uboot
 
           LOOP_DEV=$(sudo losetup --partscan --find --show ./output/images/*.img)
           sudo mount "$LOOP_DEV"p2 /mnt
