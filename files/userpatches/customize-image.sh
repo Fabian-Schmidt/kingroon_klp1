@@ -63,7 +63,7 @@ EOF
 		sed -i 's/set -e/set -ex/' ./kiauh.sh
 		sed -i 's/clear -x//' ./kiauh.sh
 		# Start kiauh and press menu buttons
-		# 2-Select KIAUH v5
+		# 4-Select KIAUH v5
 		# 1-Install
 		# 1-Klipper
 		# 1-Python 3.x
@@ -73,10 +73,16 @@ EOF
 		# 4-Fluidd
 		# No-Do not install recommended macros
 		# 5-KlipperScreen
+  		# Yes-Default
+    		# X-graphical backend is Xserver
+      		# Yes-Install NetworkManager
 		# 14-Crowsnest
+  		# Y-Add to update manager
+    		# N-Reboot now
 		# B-Back
 		# Q-Quit
-		printf '2\n1\n1\n1\n1\n2\nYes\n4\nNo\nB\nQ\n' | sudo -u mks ./kiauh.sh
+		printf '4\n1\n1\n1\n1\n2\nYes\n4\nNo\n5\nYes\nX\nYes\n14\nY\nN\n\nB\nQ\n' | sudo -u mks ./kiauh.sh
+  		git checkout kiauh.sh
 		cd ..
 
 		# Download files for Measuring Resonances in klipper
@@ -94,8 +100,8 @@ EOF
 		echo "Klipper: $(sudo -u mks git -C /home/mks/klipper describe --tags)" >>/home/mks/versions
 		echo "Moonraker: $(sudo -u mks git -C /home/mks/moonraker describe --tags)" >>/home/mks/versions
 		echo "Fluidd: $(cat /home/mks/fluidd/release_info.json | jq -r .version)" >>/home/mks/versions
-		# echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
-		# echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
+		echo "KlipperScreen: $(sudo -u mks git -C /home/mks/KlipperScreen describe --tags)" >> /home/mks/versions
+		echo "Crowsnest: $(sudo -u mks git -C /home/mks/crowsnest describe --tags)" >> /home/mks/versions
 		echo "Katapult: $(sudo -u mks git -C /home/mks/katapult describe)" >>/home/mks/versions
 		cat /home/mks/versions
 
@@ -130,6 +136,9 @@ EOF
 
 		# Force password expired for root user
 		chage -d 0 root
+
+  		# Clear SSH host keys
+		rm -f /etc/ssh/ssh_host*
 } # InstallKlipper
 
 Main "$@"
