@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOTE this script is here as a placeholder for LEGACY compatability, and shouldn't be used.  Please use hooks and extensions instead
+
 # arguments: $RELEASE $LINUXFAMILY $BOARD $BUILD_DESKTOP
 #
 # This is the image customization script

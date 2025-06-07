@@ -8,18 +8,19 @@ run-name: Create Image
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
+    # runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt -y install binfmt-support qemu-user-static
-          sudo dpkg --add-architecture aarch64
+      # - name: Install Dependencies
+      #   run: |
+      #     sudo apt update
+      #     sudo apt -y install binfmt-support qemu-user-static
+      #     sudo dpkg --add-architecture aarch64
 
       - name: Free Disk Space Before Build
         run: |
@@ -41,18 +42,14 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           git clone https://github.com/armbian/build.git --depth=1
-
-          cp -r ${{ github.workspace }}/files/userpatches/ build
           cd build
 
-          # RELEASE=jammy - Ubunutu 22.04 LTS
-          # RELEASE=bookworm - Debian 12
-          # RELEASE=trixie - Debian 13 - package `libatlas-base-dev` is removed in trixie <https://lists.debian.org/debian-science/2023/07/msg00010.html>. Required by numpy?
-          ./compile.sh BOARD=mkspi BRANCH=current RELEASE=bookworm BSPFREEZE=yes BUILD_DESKTOP=no BUILD_MINIMAL=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img KERNEL_GIT=shallow PROGRESS_LOG_TO_FILE=yes PROGRESS_DISPLAY=plain INCLUDE_HOME_DIR=yes
-          # CLEAN_LEVEL=make,debs,make-uboot
+          cp -r ${{ github.workspace }}/files/userpatches/ userpatches
+
+          ./compile.sh klp1
 
           LOOP_DEV=$(sudo losetup --partscan --find --show ./output/images/*.img)
-          sudo mount "$LOOP_DEV"p2 /mnt
+          sudo mount -o ro "$LOOP_DEV"p2 /mnt
           cp /mnt/home/mks/versions ..
           sudo umount /mnt
 
