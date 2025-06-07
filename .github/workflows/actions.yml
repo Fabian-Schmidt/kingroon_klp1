@@ -16,13 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Install Dependencies
-      #   run: |
-      #     sudo apt update
-      #     sudo apt -y install binfmt-support qemu-user-static
-      #     sudo dpkg --add-architecture aarch64
+      - name: Install Dependencies
+        if: runner.arch == 'X64'
+        run: |
+          sudo apt update
+          sudo apt -y install binfmt-support qemu-user-static
+          sudo dpkg --add-architecture aarch64
 
       - name: Free Disk Space Before Build
+        if: runner.arch == 'X64'
         run: |
           echo "Disk space before cleanup:"
           df -h

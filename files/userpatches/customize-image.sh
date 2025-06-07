@@ -62,8 +62,8 @@ EOF
 		cd /home/mks
 		sudo -u mks git clone https://github.com/dw-0/kiauh.git
 		cd kiauh
-		sed -i 's/set -e/set -ex/' ./kiauh.sh
-		sed -i 's/clear -x//' ./kiauh.sh
+		sudo -u mks sed -i 's/set -e/set -ex/' ./kiauh.sh
+		sudo -u mks sed -i 's/clear -x//' ./kiauh.sh
 		# Start kiauh and press menu buttons
 		# 4-Select KIAUH v5
 		# 1-Install
@@ -76,15 +76,15 @@ EOF
 		# No-Do not install recommended macros
 		# 5-KlipperScreen
   		# Yes-Default
-    		# X-graphical backend is Xserver
-      		# Yes-Install NetworkManager
+    	# X-graphical backend is Xserver
+      	# Yes-Install NetworkManager
 		# 14-Crowsnest
   		# Y-Add to update manager
-    		# N-Reboot now
+    	# N-Reboot now
 		# B-Back
 		# Q-Quit
 		printf '4\n1\n1\n1\n1\n2\nYes\n4\nNo\n5\nYes\nX\nYes\n14\nY\nN\n\nB\nQ\n' | sudo -u mks ./kiauh.sh
-  		git checkout kiauh.sh
+  		sudo -u mks git checkout kiauh.sh
 		cd ..
 
 		# Download files for Measuring Resonances in klipper
