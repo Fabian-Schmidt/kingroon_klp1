@@ -48,7 +48,7 @@ InstallKlipper() {
 
 		# Create user `mks`
 		useradd -m -s $(which bash) mks
-		cat /etc/group
+		# cat /etc/group
 		for additionalgroup in sudo tty dialout; do
 			usermod -aG "${additionalgroup}" mks 2>/dev/null
 		done
