@@ -50,11 +50,6 @@ jobs:
 
           ./compile.sh klp1
 
-          LOOP_DEV=$(sudo losetup --partscan --find --show ./output/images/*.img)
-          sudo mount -o ro "$LOOP_DEV"p2 /mnt
-          cp /mnt/home/mks/versions ..
-          sudo umount /mnt
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -70,7 +65,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: ${{ runner.temp }}/versions
+          path: ${{ runner.temp }}/build/output/versions
           name: versions
 
       - name: Archiving artifacts
@@ -87,7 +82,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body_path: ${{ runner.temp }}/versions
+          body_path: ${{ runner.temp }}/build/output/versions
           draft: true
           prerelease: false
 

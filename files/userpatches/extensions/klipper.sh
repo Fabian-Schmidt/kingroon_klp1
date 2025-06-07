@@ -53,3 +53,12 @@ function post_install_kernel_debs__900_klipper() {
 
     do_with_retries 3 chroot_sdcard_apt_get_install "${pkgs[@]}"
 }
+
+function post_customize_image__klipper() {
+	display_alert "Copy installed version file" "${EXTENSION}" "info"
+
+    local version_src="${SDCARD}/home/mks/versions"
+    local version_dst="${DEST}/versions"
+    # ${EXTENSION_DIR}
+	run_host_command_logged cp $version_src $version_dst
+}
