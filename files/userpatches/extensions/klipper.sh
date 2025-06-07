@@ -22,7 +22,28 @@ function post_install_kernel_debs__900_klipper() {
     pkgs+=("pkg-config")
 
     # Moonraker dependencies
-    pkgs+=("python3-virtualenv" "python3-dev" "libopenjp2-7" "libsodium-dev" "zlib1g-dev" "libjpeg-dev" "packagekit" "curl" "build-essential")
+    pkgs+=("python3-virtualenv" "python3-dev" "libopenjp2-7" "libsodium-dev" "zlib1g-dev" "libjpeg-dev" "packagekit" "curl" "build-essential" "libiw30")
+
+    # Fluidd dependencies
+    pkgs+=("nginx")
+
+    # KlipperScreen dependencies
+    pkgs+=("xinit" "xinput" "x11-xserver-utils" "xserver-xorg-input-evdev" "xserver-xorg-input-libinput" "xserver-xorg-legacy" "xserver-xorg-video-fbdev")
+
+    # KlipperScreen OPTIONAL dependencies
+    pkgs+=("fonts-nanum" "fonts-ipafont" "libmpv-dev")
+
+    # KlipperScreen PYGOBJECT dependencies
+    pkgs+=("libgirepository1.0-dev" "gcc" "libcairo2-dev" "pkg-config" "python3-dev" "gir1.2-gtk-3.0")
+
+    # KlipperScreen MISC dependencies
+    pkgs+=("librsvg2-common" "libopenjp2-7" "libdbus-glib-1-dev" "autoconf" "python3-venv")
+
+    # Crowsnest Dependencies
+    pkgs+=("git" "crudini" "bsdutils" "findutils" "v4l-utils" "curl")
+    
+    # Crowsnest Ustreamer Dependencies
+    pkgs+=("build-essential" "libevent-dev" "libjpeg-dev" "libbsd-dev" "pkg-config")
 
     # Measuring Resonances in klipper dependencies
     pkgs+=("python3-numpy" "python3-matplotlib" "libatlas-base-dev" "libopenblas-dev")
