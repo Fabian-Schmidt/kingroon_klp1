@@ -2,21 +2,29 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '*'
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 run-name: Create Image
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
+    # runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Dependencies
+        if: runner.arch == 'X64'
+        run: |
+          sudo apt update
+          sudo apt -y install binfmt-support qemu-user-static
+          sudo dpkg --add-architecture aarch64
+
       - name: Free Disk Space Before Build
+        if: runner.arch == 'X64'
         run: |
           echo "Disk space before cleanup:"
           df -h
@@ -33,40 +41,58 @@ jobs:
           df -h
 
       - name: Build image
+        working-directory: ${{ runner.temp }}
         run: |
-          git clone https://github.com/armbian/build.git --depth=1
-          cp -r ./files/userpatches/ build
+          git clone https://github.com/armbian/build.git --depth=1 --branch v25.05 --single-branch
           cd build
-          ./compile.sh  BOARD=mkspi BRANCH=current RELEASE=bookworm BSPFREEZE=yes BUILD_DESKTOP=no BUILD_MINIMAL=no KERNEL_CONFIGURE=no COMPRESS_OUTPUTIMAGE=sha,gpg,img KERNEL_GIT=shallow PROGRESS_LOG_TO_FILE=yes PROGRESS_DISPLAY=plain CLEAN_LEVEL=make,debs,make-uboot INCLUDE_HOME_DIR=yes
-          
-          LOOP_DEV=$(sudo losetup --partscan --find --show ./output/images/*.img)
-          sudo mount "$LOOP_DEV"p2 /mnt
-          export KERNEL_VERSION="$(awk '/Kernel:/ {print $2}' /mnt/home/mks/versions)"
-          cp /mnt/home/mks/versions ..
-          sudo umount /mnt
+
+          cp -r ${{ github.workspace }}/files/userpatches/ userpatches
+
+          ./compile.sh klp1
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ runner.temp }}/build/output/images
+          name: image
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ runner.temp }}/build/output/logs
+          name: logs
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ runner.temp }}/build/output/versions
+          name: versions
 
       - name: Archiving artifacts
-        run: cd build && zip -r output.zip output
+        working-directory: ${{ runner.temp }}/build
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
+        run: zip -r output.zip output/images
 
       - name: Create release
         id: create_release
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: 'Release'
-          body_path: versions
-          draft: false
+          release_name: Release ${{ github.ref }}
+          body_path: ${{ runner.temp }}/build/output/versions
+          draft: true
           prerelease: false
 
       - name: Upload files to release
         uses: actions/upload-release-asset@v1
+        if: ${{ ! startsWith(github.ref, 'refs/') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/output.zip
+          asset_path: ${{ runner.temp }}/build/output.zip
           asset_name: output.zip
           asset_content_type: application/zip
-
