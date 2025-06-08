@@ -1,16 +1,17 @@
+name: Create Image
+
 on:
   workflow_dispatch:
   release:
     types: [published]
 
-run-name: Create Image
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-24.04-arm
     # runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -71,7 +72,7 @@ jobs:
         working-directory: ${{ runner.temp }}/build/output/
         if: github.event_name == 'release'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.TOKEN }}
         run: |
           gh release edit ${{github.event.release.tag_name}} --notes-file versions
           gh release upload ${{github.event.release.tag_name}} logs/*

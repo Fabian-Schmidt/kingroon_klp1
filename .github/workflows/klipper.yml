@@ -1,16 +1,17 @@
+name: Create Klipper Firmware images
+
 on:
   workflow_dispatch:
   release:
     types: [published]
 
-run-name: Create Klipper Firmware images
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-24.04-arm
     # runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
