@@ -52,13 +52,25 @@ function post_install_kernel_debs__900_klipper() {
     pkgs+=("python3-serial")
 
     do_with_retries 3 chroot_sdcard_apt_get_install "${pkgs[@]}"
+
+    display_alert "Delete marker file  `/root/.not_logged_in_yet`" "${EXTENSION}" "info"
+	run_host_command_logged rm "${SDCARD}/root/.not_logged_in_yet"
+
+    display_alert "Disable serial terminal" "${EXTENSION}" "info"
+	run_host_command_logged rm "-f" "${SDCARD}/etc/systemd/system/getty@.service.d/override.conf"
+	run_host_command_logged rm "-f" "${SDCARD}/etc/systemd/system/serial-getty@.service.d/override.conf"
 }
 
 function post_customize_image__klipper() {
-	display_alert "Copy installed version file" "${EXTENSION}" "info"
+	display_alert "Clear SSH host keys" "${EXTENSION}" "info"
+	run_host_command_logged rm "-f" "${SDCARD}/etc/ssh/ssh_host*"
 
+	display_alert "Copy installed version file" "${EXTENSION}" "info"
     local version_src="${SDCARD}/home/mks/versions"
     local version_dst="${DEST}/versions"
-    # ${EXTENSION_DIR}
 	run_host_command_logged cp $version_src $version_dst
+
+    display_alert "Copy Device tree files" "${EXTENSION}" "info"
+	run_host_command_logged cp "${EXTENSION_DIR}/*.dtb" "${SDCARD}/boot/dtb/rockchip/"
+	run_host_command_logged echo "fdtfile=rockchip/rk3328-cheetah22.dtb" ">>" "${SDCARD}/boot/armbianEnv.txt"
 }

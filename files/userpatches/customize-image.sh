@@ -35,16 +35,6 @@ Main() {
 
 InstallKlipper() {
 		set -ex
-		# Copy Device tree files
-		# cp /tmp/overlay/rk3328-roc-cc.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
-		cp /tmp/overlay/rk3328-mkspi.dtb /boot/dtb/rockchip/rk3328-mkspi.dtb
-
-		# Delete marker file  `/root/.not_logged_in_yet`
-		rm /root/.not_logged_in_yet
-
-		# Disable serial terminal
-		rm -f /etc/systemd/system/getty@.service.d/override.conf
-		rm -f /etc/systemd/system/serial-getty@.service.d/override.conf
 
 		# Create user `mks`
 		useradd -m -s $(which bash) mks
@@ -136,9 +126,6 @@ EOF
 
 		# Force password expired for root user
 		chage -d 0 root
-
-  		# Clear SSH host keys
-		rm -f /etc/ssh/ssh_host*
 } # InstallKlipper
 
 Main "$@"
