@@ -1,3 +1,5 @@
+name: Create Release
+
 on:
   workflow_dispatch:
   push:
@@ -13,7 +15,6 @@ jobs:
     # runs-on: ubuntu-latest
     steps:
       - name: Create release
-        working-directory: ${{ runner.temp }}/katapult/out
         if: github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
