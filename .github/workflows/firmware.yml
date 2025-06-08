@@ -59,11 +59,11 @@ jobs:
 
       - name: Publish to release
         working-directory: ${{ runner.temp }}/klipper/out
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         run: |
-          gh release upload ${{github.event.release.tag_name}} *.uf2
+          gh release upload "${{github.ref_name}}" *.uf2
 
       # Katapult build
       - name: Install Katapult
@@ -103,4 +103,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         run: |
-          gh release upload ${{github.ref_name}} katapult*.uf2
+          gh release upload "${{github.ref_name}}" katapult*.uf2

@@ -75,6 +75,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         run: |
-          gh release edit ${{github.ref_name}} --notes-file versions
-          gh release upload ${{github.ref_name}} logs/*
-          gh release upload ${{github.ref_name}} images/*
+          gh release edit "${{github.ref_name}}" --notes-file versions
+          gh release upload "${{github.ref_name}}" logs/*
+          gh release upload "${{github.ref_name}}" images/*
