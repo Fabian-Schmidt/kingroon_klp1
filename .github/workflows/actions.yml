@@ -69,7 +69,7 @@ jobs:
 
       - name: Publish to release
         working-directory: ${{ runner.temp }}/build/output/
-        if: github.event.name == 'release'
+        if: github.event_name == 'release'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

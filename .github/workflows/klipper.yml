@@ -3,7 +3,7 @@ on:
   release:
     types: [published]
 
-run-name: Create Katapult Firmware images
+run-name: Create Klipper Firmware images
 
 jobs:
   build:
@@ -23,19 +23,19 @@ jobs:
             gcc-arm-none-eabi \
             binutils-arm-none-eabi
 
-      - name: Install Katapult
+      - name: Install Klipper
         working-directory: ${{ runner.temp }}
         run: |
-          git clone https://github.com/Arksine/katapult --depth=1
+          git clone https://github.com/Klipper3d/klipper --depth=1
 
       - name: Build Katapult
-        working-directory: ${{ runner.temp }}/katapult
+        working-directory: ${{ runner.temp }}/klipper
         run: |
           # Stop script early on any error
           set -eu
 
-          for TARGET in ${{ github.workspace }}/katapult/configs/toolhead.config ; do
-              echo "::group::=============== Katapult Build $TARGET"
+          for TARGET in ${{ github.workspace }}/klipper/configs/toolhead.config ; do
+              echo "::group::=============== Klipper Build $TARGET"
               set -x
               make clean
               make distclean
@@ -51,13 +51,13 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: ${{ runner.temp }}/katapult/out/katapult*.uf2
-          name: katapult-toolhead
+          path: ${{ runner.temp }}/klipper/out/*.uf2
+          name: klipper-toolhead
 
       - name: Publish to release
-        working-directory: ${{ runner.temp }}/katapult/out
+        working-directory: ${{ runner.temp }}/klipper/out
         if: github.event_name == 'release'
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         run: |
-          gh release upload ${{github.event.release.tag_name}} katapult*.uf2
+          gh release upload ${{github.event.release.tag_name}} *.uf2
