@@ -1,64 +1,64 @@
-name: Create Katapult Firmware images
+# name: Create Katapult Firmware images
 
-on:
-  workflow_dispatch:
-  release:
-    types: [published]
+# on:
+#   workflow_dispatch:
+#   release:
+#     types: [published]
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  build:
-    runs-on: ubuntu-24.04-arm
-    # runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   build:
+#     runs-on: ubuntu-24.04-arm
+#     # runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential \
-            libnewlib-arm-none-eabi \
-            gcc-arm-none-eabi \
-            binutils-arm-none-eabi
+#       - name: Install Dependencies
+#         run: |
+#           sudo apt update
+#           sudo apt install -y build-essential \
+#             libnewlib-arm-none-eabi \
+#             gcc-arm-none-eabi \
+#             binutils-arm-none-eabi
 
-      - name: Install Katapult
-        working-directory: ${{ runner.temp }}
-        run: |
-          git clone https://github.com/Arksine/katapult --depth=1
+#       - name: Install Katapult
+#         working-directory: ${{ runner.temp }}
+#         run: |
+#           git clone https://github.com/Arksine/katapult --depth=1
 
-      - name: Build Katapult
-        working-directory: ${{ runner.temp }}/katapult
-        run: |
-          # Stop script early on any error
-          set -eu
+#       - name: Build Katapult
+#         working-directory: ${{ runner.temp }}/katapult
+#         run: |
+#           # Stop script early on any error
+#           set -eu
 
-          for TARGET in ${{ github.workspace }}/katapult/configs/toolhead.config ; do
-              echo "::group::=============== Katapult Build $TARGET"
-              set -x
-              make clean
-              make distclean
-              unset CC
-              cp ${TARGET} .config
-              make olddefconfig
-              make V=1
-              set +x
-              echo "=============== Finished $TARGET"
-              echo "::endgroup::"
-          done
+#           for TARGET in ${{ github.workspace }}/katapult/configs/toolhead.config ; do
+#               echo "::group::=============== Katapult Build $TARGET"
+#               set -x
+#               make clean
+#               make distclean
+#               unset CC
+#               cp ${TARGET} .config
+#               make olddefconfig
+#               make V=1
+#               set +x
+#               echo "=============== Finished $TARGET"
+#               echo "::endgroup::"
+#           done
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: ${{ runner.temp }}/katapult/out/katapult*.uf2
-          name: katapult-toolhead
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           path: ${{ runner.temp }}/katapult/out/katapult*.uf2
+#           name: katapult-toolhead
 
-      - name: Publish to release
-        working-directory: ${{ runner.temp }}/katapult/out
-        if: github.event_name == 'release'
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-        run: |
-          gh release upload ${{github.event.release.tag_name}} katapult*.uf2
+#       - name: Publish to release
+#         working-directory: ${{ runner.temp }}/katapult/out
+#         if: github.event_name == 'release'
+#         env:
+#           GITHUB_TOKEN: ${{ github.TOKEN }}
+#         run: |
+#           gh release upload ${{github.event.release.tag_name}} katapult*.uf2

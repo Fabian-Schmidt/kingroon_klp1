@@ -1,64 +1,64 @@
-name: Create Klipper Firmware images
+# name: Create Klipper Firmware images
 
-on:
-  workflow_dispatch:
-  release:
-    types: [published]
+# on:
+#   workflow_dispatch:
+#   release:
+#     types: [published]
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  build:
-    runs-on: ubuntu-24.04-arm
-    # runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   build:
+#     runs-on: ubuntu-24.04-arm
+#     # runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential \
-            libnewlib-arm-none-eabi \
-            gcc-arm-none-eabi \
-            binutils-arm-none-eabi
+#       - name: Install Dependencies
+#         run: |
+#           sudo apt update
+#           sudo apt install -y build-essential \
+#             libnewlib-arm-none-eabi \
+#             gcc-arm-none-eabi \
+#             binutils-arm-none-eabi
 
-      - name: Install Klipper
-        working-directory: ${{ runner.temp }}
-        run: |
-          git clone https://github.com/Klipper3d/klipper --depth=1
+#       - name: Install Klipper
+#         working-directory: ${{ runner.temp }}
+#         run: |
+#           git clone https://github.com/Klipper3d/klipper --depth=1
 
-      - name: Build Katapult
-        working-directory: ${{ runner.temp }}/klipper
-        run: |
-          # Stop script early on any error
-          set -eu
+#       - name: Build Katapult
+#         working-directory: ${{ runner.temp }}/klipper
+#         run: |
+#           # Stop script early on any error
+#           set -eu
 
-          for TARGET in ${{ github.workspace }}/klipper/configs/toolhead.config ; do
-              echo "::group::=============== Klipper Build $TARGET"
-              set -x
-              make clean
-              make distclean
-              unset CC
-              cp ${TARGET} .config
-              make olddefconfig
-              make V=1
-              set +x
-              echo "=============== Finished $TARGET"
-              echo "::endgroup::"
-          done
+#           for TARGET in ${{ github.workspace }}/klipper/configs/toolhead.config ; do
+#               echo "::group::=============== Klipper Build $TARGET"
+#               set -x
+#               make clean
+#               make distclean
+#               unset CC
+#               cp ${TARGET} .config
+#               make olddefconfig
+#               make V=1
+#               set +x
+#               echo "=============== Finished $TARGET"
+#               echo "::endgroup::"
+#           done
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: ${{ runner.temp }}/klipper/out/*.uf2
-          name: klipper-toolhead
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           path: ${{ runner.temp }}/klipper/out/*.uf2
+#           name: klipper-toolhead
 
-      - name: Publish to release
-        working-directory: ${{ runner.temp }}/klipper/out
-        if: github.event_name == 'release'
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-        run: |
-          gh release upload ${{github.event.release.tag_name}} *.uf2
+#       - name: Publish to release
+#         working-directory: ${{ runner.temp }}/klipper/out
+#         if: github.event_name == 'release'
+#         env:
+#           GITHUB_TOKEN: ${{ github.TOKEN }}
+#         run: |
+#           gh release upload ${{github.event.release.tag_name}} *.uf2
