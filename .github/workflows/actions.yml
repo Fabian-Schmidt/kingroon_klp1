@@ -1,8 +1,7 @@
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types: [published]
 
 run-name: Create Image
 
@@ -68,31 +67,12 @@ jobs:
           path: ${{ runner.temp }}/build/output/versions
           name: versions
 
-      - name: Archiving artifacts
-        working-directory: ${{ runner.temp }}/build
-        if: ${{ ! startsWith(github.ref, 'refs/') }}
-        run: zip -r output.zip output/images
-
-      - name: Create release
-        id: create_release
-        if: ${{ ! startsWith(github.ref, 'refs/') }}
-        uses: actions/create-release@v1
+      - name: Publish to release
+        working-directory: ${{ runner.temp }}/build/output/
+        if: github.event.name == 'release'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body_path: ${{ runner.temp }}/build/output/versions
-          draft: true
-          prerelease: false
-
-      - name: Upload files to release
-        uses: actions/upload-release-asset@v1
-        if: ${{ ! startsWith(github.ref, 'refs/') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ runner.temp }}/build/output.zip
-          asset_name: output.zip
-          asset_content_type: application/zip
+        run: |
+          gh release edit ${{github.event.release.tag_name}} --notes-file versions
+          gh release upload ${{github.event.release.tag_name}} logs/*
+          gh release upload ${{github.event.release.tag_name}} images/*

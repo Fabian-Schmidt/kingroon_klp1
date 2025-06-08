@@ -1,14 +1,14 @@
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 run-name: Create Katapult Firmware images
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
+    # runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -53,3 +53,11 @@ jobs:
         with:
           path: ${{ runner.temp }}/katapult/out/katapult*.uf2
           name: katapult-toolhead
+
+      - name: Publish to release
+        working-directory: ${{ runner.temp }}/katapult/out
+        if: github.event.name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        run: |
+          gh release upload ${{github.event.release.tag_name}} katapult*.uf2
