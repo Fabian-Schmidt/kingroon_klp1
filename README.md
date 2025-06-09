@@ -51,7 +51,17 @@ As alternative to flashing Klipper directly onto the RP2040 you can flash Katapu
 
 The katapult firmware image is avaiable as [katapult.withclear.uf2](https://github.com/Fabian-Schmidt/kingroon_klp1/releases/latest).
 
-After flashing this image you must flash klipper in the device. Follow the [official readme](https://github.com/Arksine/katapult) for this.
+After flashing this image you must flash klipper in the device. Follow the [official 
+readme](https://github.com/Arksine/katapult) for this.
+
+Basic instructions are:
+
+```bash
+~/klipper$ make menuconfig
+~/klipper$ make
+~/katapult/scripts$ python3 flashtool.py -d /dev/ttyS0 -r
+~/katapult/scripts$ python3 flashtool.py -d /dev/ttyS0 -f ~/klipper/out/klipper.bin
+```
 
 </details>
 
