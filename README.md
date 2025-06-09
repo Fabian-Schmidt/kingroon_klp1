@@ -10,7 +10,7 @@
 - Soldering Iron
   - Means to connect Toolhead to USB cable.
 - MKS EMMC Adapter V1.0 or analog (supplied included).
-  - **It is possible to change system image without printer disassembling check** [here](#booting-from-USB-flash)
+  - **It is possible to change system image without printer disassembling check** [here](Mainboard.md#booting-from-USB-flash)
   - microSD card reader suitable to work with EMMC (read below)
 
 ## Toolhead board (THR) flash
