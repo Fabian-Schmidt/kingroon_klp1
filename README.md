@@ -19,6 +19,8 @@
 
 You can disassembly an old mouse to get USB cable and JST-XH 2.5mm(2.54mm) connector or use Dupont cable and USB breakout board.
 
+See also [Kingroon guide](https://kingroon.com/blogs/3d-print-101/flash-thr-board-firmware-of-kingroon-kp3s-pro-v2-klp1-3d-printer).
+
 #### JST-XH
 
 ![](./pictures/rp2040_v22_1.jpg) ![](./pictures/rp2040_v22_2.jpg)
@@ -54,6 +56,9 @@ After flashing this image you must flash klipper in the device. Follow the [offi
 </details>
 
 ## Flash EMMC on Mainboard
+
+
+See also [Kingroon guide](https://kingroon.com/blogs/3d-print-101/how-to-flash-the-emmc-chip-on-kingroon-kp3s-pro-v2-klp1-klipper-3d-printers).
 
 > [!TIP] 
 > You can pruchase a second (larger & faster) eMMC module to avoid creating a backup.
